@@ -51,7 +51,7 @@ class UpdateManager implements ContainerAwareInterface
      * @param boolean $skip_perms if TRUE, no user permissions will be taken in account and all servers will be updated
      * @param string|null $status If all servers (null), or just `on` or `off` should be checked.
      */
-    public function run($skip_perms = false, $status = null)
+    public function run($skip_perms = false, $status = null, $idServers = [])
     {
         if (false === in_array($status, ['on', 'off'], true)) {
             $status = null;
@@ -68,13 +68,23 @@ class UpdateManager implements ContainerAwareInterface
                         )";
         }
 
-        $sql = "SELECT `s`.`server_id`,`s`.`ip`,`s`.`port`,`s`.`label`,`s`.`type`,`s`.`pattern`,`s`.`header_name`,
+        if (!empty($idServers)) {
+            $idServersString = implode(',', $idServers);
+            $sql = "SELECT `s`.`server_id`,`s`.`ip`,`s`.`port`,`s`.`label`,`s`.`type`,`s`.`pattern`,`s`.`header_name`,
+            `s`.`header_value`,`s`.`status`,`s`.`active`,`s`.`email`,`s`.`sms`,`s`.`pushover`,`s`.`telegram`, 
+            `s`.`jabber`
+                FROM `" . PSM_DB_PREFIX . "servers` AS `s`
+                {$sql_join}
+                WHERE `s`.`server_id` in ({$idServersString}) AND `active`='yes' " . ($status !== null ? ' AND `status` = \'' . $status . '\'' : '');
+        } else {
+            $sql = "SELECT `s`.`server_id`,`s`.`ip`,`s`.`port`,`s`.`label`,`s`.`type`,`s`.`pattern`,`s`.`header_name`,
             `s`.`header_value`,`s`.`status`,`s`.`active`,`s`.`email`,`s`.`sms`,`s`.`pushover`,`s`.`telegram`, 
             `s`.`jabber`
                 FROM `" . PSM_DB_PREFIX . "servers` AS `s`
                 {$sql_join}
                 WHERE `active`='yes' " . ($status !== null ? ' AND `status` = \'' . $status . '\'' : '');
-
+        }
+        
         $servers = $this->container->get('db')->query($sql);
 
         $updater = new Updater\StatusUpdater($this->container->get('db'));
