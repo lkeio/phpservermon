@@ -62,6 +62,7 @@ namespace {
         echo "OK";
     }
 
+
     $cron_timeout = PSM_CRON_TIMEOUT;
 // parse a couple of arguments
     if (!empty($_SERVER['argv'])) {
@@ -87,7 +88,6 @@ namespace {
 // however if the cron has been running for X mins, we'll assume it died and run anyway
 // if you want to change PSM_CRON_TIMEOUT, have a look in src/includes/psmconfig.inc.php.
 // or you can provide the --timeout=x argument
-
     $status = null;
     if (PHP_SAPI === 'cli') {
         $shortOptions = 's:'; // status
@@ -120,6 +120,9 @@ namespace {
         }
     }
 
+    $rawServerIds = explode('=', $argv);
+    $arrayServerIds = explode(',', $rawServerIds[1]);
+
     if ($status === 'off') {
         $confPrefix = 'cron_off_';
     } else {
@@ -143,8 +146,11 @@ namespace {
     /** @var UpdateManager $autorun */
     $autorun = $router->getService('util.server.updatemanager');
 
-    if ($status !== 'off') {
+
+    if ($status !== 'off' && empty($arrayServerIds[0])) {
         $autorun->run(true, $status);
+    } elseif (!empty($arrayServerIds[0])) {
+        $autorun->run(true, $status, $arrayServerIds);
     } else {
         set_time_limit(60);
         if (false === defined('CRON_DOWN_INTERVAL')) {
