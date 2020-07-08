@@ -75,7 +75,7 @@ class UpdateManager implements ContainerAwareInterface
             `s`.`jabber`
                 FROM `" . PSM_DB_PREFIX . "servers` AS `s`
                 {$sql_join}
-                WHERE `s`.`server_id` in ({$idServersString}) AND `active`='yes' " . ($status !== null ? ' AND `status` = \'' . $status . '\'' : '');
+                WHERE `s`.`server_id` IN ({$idServersString}) AND `active`='yes' " . ($status !== null ? ' AND `status` = \'' . $status . '\'' : '');
         } else {
             $sql = "SELECT `s`.`server_id`,`s`.`ip`,`s`.`port`,`s`.`label`,`s`.`type`,`s`.`pattern`,`s`.`header_name`,
             `s`.`header_value`,`s`.`status`,`s`.`active`,`s`.`email`,`s`.`sms`,`s`.`pushover`,`s`.`telegram`, 

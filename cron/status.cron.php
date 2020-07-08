@@ -120,11 +120,9 @@ namespace {
         }
     }
 
-
-    // Manage Agruments
     $rawServerIds = explode('=', $argv);
     $arrayServerIds = explode(',', $rawServerIds[1]);
-    // Ende here
+
     if ($status === 'off') {
         $confPrefix = 'cron_off_';
     } else {
@@ -151,7 +149,7 @@ namespace {
 
     if ($status !== 'off' && empty($arrayServerIds[0])) {
         $autorun->run(true, $status);
-    } elseif (isset($argv)) {
+    } elseif (!empty($arrayServerIds[0])) {
         $autorun->run(true, $status, $arrayServerIds);
     } else {
         set_time_limit(60);
