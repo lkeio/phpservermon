@@ -120,8 +120,10 @@ namespace {
         }
     }
 
+    
     $rawServerIds = explode('=', $argv);
-    $arrayServerIds = explode(',', $rawServerIds[1]);
+
+    $arrayServerIds = ($rawServerIds[0] == 'servers') ? explode(',', $rawServerIds[1]) : null;
 
     if ($status === 'off') {
         $confPrefix = 'cron_off_';
