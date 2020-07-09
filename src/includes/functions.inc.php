@@ -425,9 +425,9 @@ namespace {
         }
 
         if (!empty($post_field)) {
+            curl_setopt($ch, CURLOPT_POST, 1);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $post_field);
         }
-
         if (
             $website_username !== false &&
             $website_password !== false &&
