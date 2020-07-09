@@ -120,6 +120,9 @@ namespace {
         }
     }
 
+    $rawServerIds = explode('=', $argv);
+    $arrayServerIds = ($rawServerIds[0] == 'servers') ? explode(',', $rawServerIds[1]) : [];
+
     if ($status === 'off') {
         $confPrefix = 'cron_off_';
     } else {
@@ -143,8 +146,10 @@ namespace {
     /** @var UpdateManager $autorun */
     $autorun = $router->getService('util.server.updatemanager');
 
-    if ($status !== 'off') {
+    if ($status !== 'off' && empty($arrayServerIds[0])) {
         $autorun->run(true, $status);
+    } elseif (!empty($arrayServerIds[0])) {
+        $autorun->run(true, $status, $arrayServerIds);
     } else {
         set_time_limit(60);
         if (false === defined('CRON_DOWN_INTERVAL')) {
